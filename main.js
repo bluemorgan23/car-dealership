@@ -31,11 +31,39 @@ const totalProfitIn2017 =
 
 console.log(totalProfitIn2017);
 
-const buildMonthObj = (month) => {
-    return {
-        month: month,
-        carsSold: 0
-    }
+
+//Create a function that makes a copy of the array passed in and compares the values with the original array of dates. If the values are the same, the count variable increases by one. If the count value is greather than one, we create a date object. The date object has two keys: date that accepts the value of the date string, and carsSold that accepts the value of the count variable in order to count how many cars were sold in that month. The object that is created is then pushed into the newArray which now displays the amount of cars sold and the dates. Then we map the newArray to return only the number of cars sold for that month. We find the highest value, which is 8. Then we loop through newArray again to see which objects carsSold value is 8, and we add these objects to highestNumbersArray. I spliced this array to contain only the first two objects because the rest were duplicates.
+
+const compareArrays = (originalArray) => {
+    const newArray = [];
+    const duplicate = originalArray.slice(0);
+    const highestNumbersArray = [];
+
+    originalArray.forEach(dateOne => {
+        let count = 0;
+
+        duplicate.forEach(dateTwo => {
+            if(dateOne === dateTwo){
+                count++;
+            }
+        })
+        if(count > 0){
+            let dateObj = {
+                date: dateOne,
+                carsSold: count
+            }
+           
+            newArray.push(dateObj);
+        }
+    })
+    const justNum = newArray.map(obj => obj.carsSold);
+    const highestNum = Math.max.apply(null, justNum);
+    newArray.forEach(obj => {
+        if(obj.carsSold === highestNum){
+            highestNumbersArray.push(obj);
+        }
+    })
+    return highestNumbersArray.slice(0,2);
 }
 
 const bestMonth =
@@ -48,57 +76,9 @@ const bestMonth =
         return is2017;
     })).then(response => response.map(car => {
         return car.purchase_date.slice(5, 7);
-        debugger;
 
-    })).then(response => response.forEach(car => {
-        switch (car) {
-            case ("01"):
-                monthObj.month = "January";
-                monthObj.carsSold += 1;
-                break;
-            case ("02"):
-                monthObj.month = "February";
-                monthObj.carsSold += 1;
-                break;
-            case ("01"):
-                monthObj.month = "January";
-                monthObj.carsSold += 1;
-                break;
-            case ("01"):
-                monthObj.month = "January";
-                monthObj.carsSold += 1;
-                break;
-            case ("01"):
-                monthObj.month = "January";
-                monthObj.carsSold += 1;
-                break;
-            case ("01"):
-                monthObj.month = "January";
-                monthObj.carsSold += 1;
-                break;
-            case ("01"):
-                monthObj.month = "January";
-                monthObj.carsSold += 1;
-                break;
-            case ("01"):
-                monthObj.month = "January";
-                monthObj.carsSold += 1;
-                break;
-            case ("01"):
-                monthObj.month = "January";
-                monthObj.carsSold += 1;
-                break;
-            case ("01"):
-                monthObj.month = "January";
-                monthObj.carsSold += 1;
-                break;
-            case ("01"):
-                monthObj.month = "January";
-                monthObj.carsSold += 1;
-                break;
-            case ("01"):
-                monthObj.month = "January";
-                monthObj.carsSold += 1;
-                break;
-        }
+    })).then(response => compareArrays(response))
+    .then(response => response.forEach(obj => {
+        container.innerHTML += `<h2>Month ${obj.date} sold the most cars: ${obj.carsSold}`
     }));
+    
