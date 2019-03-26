@@ -81,4 +81,86 @@ const bestMonth =
     .then(response => response.forEach(obj => {
         container.innerHTML += `<h2>Month ${obj.date} sold the most cars: ${obj.carsSold}`
     }));
+
+
+const carCount = (agentArray) => {
+    let counts = {};
+
+    agentArray.forEach(function(i) {
+        counts[i] = (counts[i] || 0) + 1;
+    })
+    return counts;
+}
+
+const mostCarsAgent = (agentsObject) => {
+    let higherNumber = 0;
+    let agentName = "";
+    for(let name in agentsObject){
+        if (agentsObject[name] > higherNumber){
+            higherNumber = agentsObject[name];
+            agentName = name + " sold " + higherNumber;
+        }
+        if (agentsObject[name] === higherNumber && !agentName.includes(name)){
+            agentName += " tied with " + name + " with " + higherNumber;
+        }
+    }
+    return agentName;
+}
+
+
+const combinedProfit = (array) => {
+    let newArray = [];
+    let copy = array.slice(0);
+
+    array.forEach(agentOne => {
+        let profit = agentOne.profit
+        let count = 0;
+
+        for(let i = 1; i < copy.length; i++) {
+            if(agentOne.name === copy[i].name)
+            profit += copy[i].profit
+            count++;
+        }
+        if (count > 0){
+            let agentObj = {
+                name: agentOne.name,
+                profit: parseFloat(profit.toFixed(2))
+            }
+        newArray.push(agentObj);
+        }
+    })
+    
+    newArray = newArray.reduce((unique, o) => {
+        if(!unique.some(obj => obj.name === o.name)){
+            unique.push(o);
+        }
+        return unique;
+    }, []);
+    
+    const highestSale = Math.max.apply(null, newArray.map(function(a){return a.profit}));
+    console.log(highestSale)
+   return newArray.find(agent => agent.profit === highestSale)
+}
+
+
+const soldMostCars = getCars().then(response => response.map(sale => sale.sales_agent.first_name)).then(response => response.sort()).then(response => carCount(response)).then(response => container.innerHTML += `<h2>This agent sold the most cars: ${mostCarsAgent(response)}</h2>`);
+
+const agentsAndProfit = getCars().then(response => response.map(obj => { return {name: obj.sales_agent.first_name, profit: obj.gross_profit}
+})).then(response => response.sort(function(a,b){
+    let nameA = a.name
+    let nameB = b.name
+    if(nameA < nameB){
+        return -1;
+    }
+    if(nameA > nameB){
+        return 1
+    }
+    return 0;
+})).then(response => combinedProfit(response)).then(response => container.innerHTML += `<h2>${response.name} made the most profit with $${response.profit}`);
+
+const modelList = getCars().then(response => response.map(sale => sale.vehicle.model)).then(response => carCount(response)).then(response => mostCarsAgent(response)).then(response => container.innerHTML += `<h2>${response}</h2>`);
+
+const creditList = getCars().then(response => response.map(bank => bank.credit.credit_provider)).then(response => carCount(response)).then(response => mostCarsAgent(response)).then(response => container.innerHTML += `<h2>${response}</h2>`);
+
+
     
