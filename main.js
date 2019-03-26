@@ -83,6 +83,7 @@ const bestMonth =
     }));
 
 
+    // carCount creates an associative array object called count that will have a key value pair for each unique element in the array, where the key is the unique element value and the value is the count. He iterates over the array and for each value either increments the value or creates the key value pair (the value of the non-existent key evaluates to undefined so the || or operator takes a zero instead and adds the 1)
 const carCount = (agentArray) => {
     let counts = {};
 
